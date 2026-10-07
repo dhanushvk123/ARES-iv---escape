@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARES-IV: Deep Space Escape</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04070d;--pn:#0a121e;--tx:#e8edf3;--cy:#4fd1ff;--am:#ffb020;--rd:#ff4455;--gr:#3ddc84;--bd:#1b3552}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:radial-gradient(ellipse at top,#0b1830,var(--bg) 70%);color:var(--tx);font:16px/1.5 'IBM Plex Mono',ui-monospace,Consolas,monospace;min-height:100vh}
+h1,h2,h3,.hd{font-family:Orbitron,'Segoe UI',sans-serif;letter-spacing:.08em;margin:0}
+.scr{max-width:1100px;margin:0 auto;padding:16px}
+.pn{background:var(--pn);border:1px solid var(--bd);border-radius:6px;padding:14px;margin-bottom:12px}
+.btn{background:#0d2238;color:var(--cy);border:1px solid var(--cy);padding:10px 16px;font:inherit;cursor:pointer;border-radius:4px;letter-spacing:.05em}
+.btn:hover:not(:disabled),.btn:focus-visible{background:var(--cy);color:#001018;outline:none}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.go{border-color:var(--am);color:var(--am);font-size:1.1rem;padding:14px 24px}
+.btn.go:hover{background:var(--am);color:#1a1000}
+input{background:#000;color:var(--tx);border:1px solid var(--cy);padding:10px;font:inherit;border-radius:4px;width:100%;max-width:280px}
+.big{font-size:clamp(2.2rem,8vw,4.5rem);font-weight:800;color:var(--cy)}
+.sub{color:var(--am);letter-spacing:.2em}
+.hud{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.tm{font-size:2rem;font-family:Orbitron,sans-serif}
+.warn .tm{color:var(--am)}.crit .tm{color:var(--rd)}.emg .tm{color:var(--rd);animation:pl .5s infinite alternate}
+@keyframes pl{to{opacity:.35}}
+.bars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:.8rem}
+.bar{height:10px;background:#000;border:1px solid var(--bd);margin-top:3px}
+.bar i{display:block;height:100%;background:var(--cy);transition:width .4s}
+.bar.low i{background:var(--rd)}
+.main{display:grid;grid-template-columns:230px 1fr;gap:12px}
+.map div{padding:6px 8px;border-left:3px solid var(--bd);font-size:.85rem;color:#7f93a8}
+.map .done{color:var(--gr);border-color:var(--gr)}.map .cur{color:var(--am);border-color:var(--am);background:#1a1405}
+.fr{color:var(--cy);font-size:.8rem;white-space:pre-line}.ev{border-left:3px solid var(--am);background:#0d1520;padding:6px 10px;margin:6px 0;white-space:pre-line;font-size:.9rem}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,64px));gap:5px;margin-top:10px}
+.grid button{aspect-ratio:1;font:inherit;font-size:.75rem;background:#0d1a2a;color:var(--tx);border:1px solid var(--bd);cursor:pointer}
+.grid .x{background:#2a0d12;color:var(--rd)}.grid .p{background:#0e3a2a;color:var(--gr)}
+#msg{white-space:pre-line;min-height:1.5em}
+.bad{border-color:var(--rd)!important;color:var(--rd)}.good{border-color:var(--gr)!important;color:var(--gr)}
+#fl{position:fixed;inset:0;pointer-events:none;background:var(--rd);opacity:0}
+#fl.on{animation:fl .5s}@keyframes fl{30%{opacity:.35}}
+.shake{animation:sk .45s}@keyframes sk{20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,2px)}80%{transform:translate(4px,-2px)}}
+#pause{position:fixed;inset:0;background:#000d;display:flex;align-items:center;justify-content:center;text-align:center;z-index:9}
+table{width:100%;border-collapse:collapse;font-size:.85rem}td,th{padding:4px 6px;border-bottom:1px solid var(--bd);text-align:left}
+.cd{font-size:4rem;text-align:center;color:var(--am)}
+@media(max-width:700px){.main{grid-template-columns:1fr}.map{display:flex;flex-wrap:wrap;gap:4px}.map div{flex:1 1 45%}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<div id="fl"></div>
+<div id="app">
+<section id="title" class="scr">
+ <div class="pn" style="text-align:center">
+  <div class="big hd">ARES-IV</div><h2 class="sub">DEEP SPACE ESCAPE</h2>
+  <p><b>30 MINUTES. 10 SECTORS. ONE WAY OUT.</b></p>
+ </div>
+ <div class="pn"><pre style="white-space:pre-wrap;margin:0">ARES-IV DEEP SPACE STATION — EMERGENCY PROTOCOL 07
+METEOR IMPACT DETECTED. REACTOR CONTAINMENT FAILURE.
+MULTIPLE SYSTEMS OFFLINE. ALL BULKHEADS SEALED.
+CREW STATUS: 1 SURVIVOR
+MISSION STATUS: CRITICAL  |  REACTOR: UNSTABLE  |  ESCAPE WINDOW: 30:00
+
+CAN YOU REACH THE ESCAPE POD BAY?</pre></div>
+ <div class="pn"><label for="nm">ENTER CREW IDENTIFICATION</label><br>
+  <input id="nm" maxlength="20" placeholder="NAME" autocomplete="off"><br><br>
+  <button class="btn go" id="start">INITIATE ESCAPE</button>
+  <button class="btn" id="snd">SOUND: ON</button></div>
+ <div class="pn"><h3>TOP SURVIVORS</h3><div id="lb1"></div></div>
+ <p style="text-align:center;color:#7f93a8;font-size:.8rem">ARES-IV DEEP SPACE STATION · EMERGENCY PROTOCOL 07</p>
+</section>
+
+<section id="game" class="scr" hidden>
+ <div class="pn hud" id="hud">
+  <div class="hd">ARES-IV · <span id="who"></span></div>
+  <div><div style="font-size:.7rem">REACTOR MELTDOWN — TIME REMAINING</div><div class="tm" id="tm">30:00</div></div>
+  <div class="hd">SCORE <span id="sc">0</span></div>
+  <div><button class="btn" id="ps">PAUSE</button> <button class="btn" id="snd2">SOUND: ON</button></div>
+ </div>
+ <div class="pn bars">
+  <div>INTEGRITY <span id="v1"></span><div class="bar" id="b1"><i></i></div></div>
+  <div>OXYGEN <span id="v2"></span><div class="bar" id="b2"><i></i></div></div>
+  <div>REACTOR <span id="v3"></span><div class="bar" id="b3"><i></i></div></div>
+ </div>
+ <div class="main">
+  <div class="pn"><h3 style="font-size:.9rem">SYSTEM MAP</h3><div class="map" id="map"></div><p class="fr" id="fr"></p></div>
+  <div class="pn">
+   <h2 id="ln"></h2><p id="lq"></p><div id="fg"></div><div id="pz"></div>
+   <p><button class="btn" id="hb">REQUEST HINT (-50)</button></p>
+   <p id="hint" style="color:var(--am)"></p>
+   <div class="pn" id="msgb" aria-live="assertive"><div id="msg">AWAITING INPUT…</div></div>
+  </div>
+ </div>
+</section>
+
+<section id="end" class="scr" hidden>
+ <div class="pn" id="endp" style="text-align:center">
+  <h1 id="et"></h1><div class="cd" id="cd"></div><pre id="es" style="white-space:pre-wrap;font:inherit"></pre>
+  <button class="btn go" id="again">TRY AGAIN</button> <button class="btn" id="menu">RETURN TO MAIN MENU</button>
+ </div>
+ <div class="pn"><h3>TOP SURVIVORS</h3><div id="lb2"></div></div>
+</section>
+<div id="pause" hidden><div class="pn"><h1>GAME PAUSED</h1><p>SYSTEMS ON HOLD</p>
+ <button class="btn go" id="res">RESUME</button> <button class="btn" id="quit">QUIT TO MENU</button></div></div>
+</div>
+<script>
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0'),fmt=t=>pad(t/60|0)+':'+pad(t%60);
+const LB='ares4_lb',NM='ares4_name',TOTAL=1800;
+/* ===== LEVEL DATA (edit here): n=name p=points t=type q=text a=answer h=hint b=consequence f=fragment ===== */
+const LV=[
+{n:'IMPACT CONTROL',p:100,t:'seq',lore:"You reach the wrecked control room. The main console is locked behind an emergency-procedure panel. Only three switches are live, and the crew's evacuation notice is half burned.",q:"Which order did the crew activate the three emergency systems? Flip the switches in that order.",cl:["WARNING SCREEN (damaged): MANUAL SEQUENCE REQUIRED — 3 SYSTEMS","CAPTAIN'S NOTE: 'Always activate in order of survival priority. Never call for help until you can breathe.'","CREW LOG: 'When the impact hit, the lights went out BEFORE the oxygen alarm sounded.'","INDICATOR: the POWER label is blinking amber."],items:['LIFE SUPPORT','POWER','COMMUNICATION'],o:['POWER','LIFE SUPPORT','COMMUNICATION'],ok:'CONSOLE UNLOCKED',f:['1','TREMOR — felt it before the alarm.'],h:"Survival priority, shaped by what failed first: the lights died before the oxygen alarm. Comms come last.",b:{r:'integ',v:5,h:'WRONG PROTOCOL',m:'EMERGENCY SEQUENCE REJECTED. HULL STRESS RISING.'}},
+{n:'POWER DISTRIBUTION',p:150,t:'seq',lore:"The electrical room is dark. Six switches, each marked with a symbol. Someone scratched notes onto the panel before the lights died.",q:"Restore emergency power by flipping the right switches in the right order. Some switches are decoys.",cl:["ENGINEER'S NOTE: 'Never activate the red line before the blue line.'","ENGINEER'S NOTE: 'The emergency system always wakes up from left to right.'","PANEL STENCIL: 'Only MAIN lines carry emergency power. AUX lines are dead ends.'"],items:['A ▲ GREEN MAIN','B ● RED MAIN','C ■ BLUE MAIN','D ◆ RED AUX','E ★ YELLOW AUX','F ◇ BLUE AUX'],o:['A ▲ GREEN MAIN','C ■ BLUE MAIN','B ● RED MAIN'],ok:'EMERGENCY POWER RESTORED',f:['2','RELAY — blue line first.'],h:"Use only the three MAIN lines, left to right, except red has to wait until blue is done.",b:{r:'reac',v:5,h:'⚡ POWER SURGE',m:'WRONG SWITCH. THE ROOM LOSES POWER FOR A MOMENT.',fx:'spark'}},
+{n:'COMMUNICATIONS ARRAY',p:200,t:'in',lore:"The comms terminal still blinks. A corrupted voice message plays: 'If you are hearing this, I am probably gone... the system password is not written anywhere. You already know it.'",q:"Reconstruct what the crew left behind and enter the private-channel password.",cl:["CREW ROSTER: CMDR REYES · ELENA · MARCUS · TOMAS · MIRA","PHOTO, DAY 1, OBSERVATION DECK: Reyes, Elena, Marcus and Tomas pose together, smiling.","HANDWRITTEN NOTE: 'The captain opens a private channel with the name of whoever is behind the camera in every photo.'","FREQUENCY DISPLAY: 7.14 MHz — PRIVATE CHANNEL — PASSWORD REQUIRED"],a:['mira'],ok:'PRIVATE CHANNEL ACCEPTED',f:['3','UNKNOWN — a voice on channel 3 keeps changing.'],h:"Five people are on the roster. Count the faces in the photo. Someone had to hold the camera.",b:{r:'oxy',v:5,h:'COMMS ARRAY DAMAGED',m:'PASSWORD REJECTED. RELAY FEEDBACK HIT LIFE SUPPORT.'}},
+{n:'LIFE SUPPORT',p:250,t:'seq',lore:"The oxygen control room is hissing. The screen reads FLOW DIRECTION UNKNOWN. A maintenance note is taped to the pipes: 'Follow the arrows.'",q:"Open the valves in the order the air travels, from the oxygen tank to the cabin. Closed valves for other systems must stay shut.",cl:["SCHEMATIC:\nO2 TANK ══▶ [A] ══▶ FILTER ══▶ [D] ══▶ CABIN\nCABIN ──▶ [B] ──▶ CO2 SCRUBBER (flows AWAY from the cabin)\nREACTOR LOOP ◀══ [C] ══ COOLING (separate system)","MAINTENANCE NOTE: 'Open valves in the direction the air flows.'"],items:['A — OXYGEN','B — CO2','C — COOLING','D — PRESSURE'],o:['A — OXYGEN','D — PRESSURE'],ok:'AIRFLOW ESTABLISHED',f:['4','SEAL — the doors close from the inside.'],h:"Trace the double-line arrows only: tank to filter, filter to cabin. The valve on each hop is the one you open.",b:{r:'oxy',v:10,h:'AIRFLOW BLOCKED',m:'WRONG VALVE. LIFE SUPPORT EFFICIENCY REDUCED.',al:1}},
+{n:'NAVIGATION CORE',p:300,t:'ch',lore:"The star display is cracked. Only four stars survived. A crew member left notes taped around the screen.",q:"Which star is the crew's navigation star for leaving the sector?",cl:["CREW NOTE: 'We never navigated by the brightest star.'","CREW NOTE: 'The red star marks the station's home sector. We are leaving, not going back.'","NAV LOG: 'Two suns light the way out.'"],opts:['★ White giant, the brightest in the sky','★ Dim red dwarf','★ Blue pair, two stars orbiting each other','★ Lone yellow star'],a:2,ok:'ROUTE LOCKED',f:['5','TWIN — two suns, one way out.'],h:"Cross out the brightest and the red one. Which remaining star matches 'two suns'?",b:{r:'integ',v:10,h:'HULL DAMAGE',m:'WRONG HEADING. COURSE CORRECTION SCRAPED THE HULL.'}},
+{n:'ENGINEERING BAY',p:350,t:'ch',lore:"CRITICAL COMPONENT FAILURE is flashing. The most damaged-looking part of the machine is not necessarily the broken one.",q:"Which module is the real cause of the failure?",cl:["SYSTEM READOUT:\nREACTOR TEMPERATURE: NORMAL\nCOOLANT PRESSURE: ABNORMAL\nPOWER CELL OUTPUT: NORMAL\nCONTROL PANEL: DISPLAY CRACKED","MAINTENANCE LOG: 'When the coolant pump fails, pressure drops first. Reactor temperature rises only later.'","PREVIOUS REPAIR NOTE: 'Panel cracked again. Cosmetic. Ignore it and check the pressure first.'"],opts:['CONTROL PANEL (cracked and sparking)','REACTOR CORE','COOLANT PUMP','POWER CELL'],a:2,ok:'FAULT ISOLATED',f:['6','NOISE — the pump was fine yesterday. Who touched it?'],h:"Which readouts are abnormal? The log says which part gives that symptom.",b:{r:'reac',v:10,h:'SHORT CIRCUIT',m:'WRONG MODULE REPLACED. SPARKS IN THE BAY.',fx:'spark'}},
+{n:'REACTOR CONTROL',p:400,t:'seq',tl:45,lore:"The reactor is shaking. A scorched procedure sheet is still pinned to the console, and the containment alarm is climbing.",q:"Run the emergency procedure before the countdown ends. If time runs out, the sequence resets.",cl:["PROCEDURE: 'Never vent before containment.'","PROCEDURE: 'Coolant must flow before the core can be stabilized.'","PROCEDURE: 'Containment fields only hold once coolant is flowing.'","PROCEDURE: 'Venting is always the final act.'"],items:['CORE','COOLANT','MAGNETIC CONTAINMENT','VENTING'],o:['COOLANT','MAGNETIC CONTAINMENT','CORE','VENTING'],ok:'REACTOR STABILIZING',f:['7','OVERRIDE — the core obeys a human hand.'],h:"Coolant first. Containment needs coolant. The core comes after both. Vent last.",b:{r:'reac',v:15,h:'REACTOR SPIKE',m:'PROCEDURE VIOLATED OR TIME EXPIRED. HEAVY WARNING STATE.',al:1}},
+{n:'SECURITY CORE',p:450,t:'in',lore:"The security terminal demands a 4-digit access code. The code belongs to one of the crew, and the room is full of their things.",q:"Work out whose code it is, then enter the four digits.",cl:["TERMINAL: 4-DIGIT ACCESS CODE REQUIRED","LOCKER 14: ELENA — DECK 4, BUNK 6\nLOCKER 09: MARCUS — DECK 2, BUNK 9","PHOTOGRAPH: MISSION DAY 31 — Elena's birthday party","TERMINAL LOG: ELENA — ENLISTED: DAY 17 · FIRST MISSION: DAY 22","HANDWRITTEN NOTE: 'She never forgot the day she joined the ARES program. Her code is that day, then her locker position: deck first, then bunk.'"],a:['1746'],ok:'SECURITY OVERRIDE ACCEPTED',f:['8','ACCESS — the day she joined, and where she slept.'],h:"Two-digit day she JOINED (not first mission, not the party), then deck, then bunk.",b:{r:'integ',v:0,time:30,h:'SECURITY LOCKDOWN',m:'ACCESS DENIED. LOCK JAMMED. TIME PENALTY: -30 SECONDS.',fx:'glitch'}},
+{n:'ESCAPE SYSTEMS',p:500,t:'seq',lore:"You reach the escape pod, but it cannot launch. Everything you learned about this station now matters.",q:"Bring the pod systems online in the right order.",cl:["POD STATUS:\nPOWER: OFFLINE\nNAVIGATION: LOCKED\nLIFE SUPPORT: READY\nDOOR: LOCKED","POD MANUAL: 'The pod will not accept navigation data until power is restored.'","POD MANUAL: 'The door only unlocks after life support is active.'","CAPTAIN'S LOG: 'Navigation boots first. Life support draws too much current right after power-on.'"],items:['DOOR','LIFE SUPPORT','NAVIGATION','POWER'],o:['POWER','NAVIGATION','LIFE SUPPORT','DOOR'],ok:'POD SYSTEMS ONLINE',f:['9','IGNITION — last step, never the first.'],h:"Power is first, the door is last. The captain's log tells you which of the two middle systems goes first.",b:{r:'integ',v:15,h:'POD SYSTEM DAMAGE',m:'ACTIVATION ORDER VIOLATED. POD BROWNOUT.'}},
+{n:'ESCAPE POD BAY',p:1000,t:'in',lore:"The launch terminal flickers. Its voice is calm and friendly. Too friendly.",q:"Enter the crew's warning to unlock launch authorization.",cl:["TERMINAL: THE STATION HAS BEEN LYING TO YOU.","TERMINAL: USE WHAT THE CREW LEFT BEHIND.","Every sector held a word the crew scribbled in the margins. Read the fragment log under the system map."],a:['trust no ai','trustnoai'],h:"Take the first letter of each fragment word, in order from sector 1.",b:{r:'reac',v:20,h:'LAUNCH AUTH REJECTED',m:'SEVERE REACTOR INSTABILITY. THE STATION DOES NOT WANT YOU TO LEAVE.',al:1}}
+];
+const RANKS=[[3300,'S-RANK — LEGENDARY SURVIVOR'],[2800,'A-RANK — ELITE ENGINEER'],[2200,'B-RANK — STATION SURVIVOR'],[1500,'C-RANK — CRITICAL SURVIVAL'],[0,'D-RANK — BARELY ALIVE']];
+const norm=v=>v.trim().toLowerCase().replace(/\s+/g,' ');
+const rank=s=>RANKS.find(r=>s>=r[0])[1];
+/* ===== AUDIO ===== */
+let sndOn=true,ac;
+const SFX={click:[[700,.05]],ok:[[520,.1],[780,.18]],bad:[[150,.3,'sawtooth']],alarm:[[880,.12,'square'],[660,.12,'square'],[880,.12,'square']],spark:[[1800,.04,'square'],[900,.04,'square'],[2200,.05,'square']],door:[[300,.1],[420,.1],[560,.15]],launch:[[120,.9,'sawtooth']],warn:[[440,.2,'square']]};
+function snd(k){if(!sndOn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();let t=ac.currentTime;SFX[k].forEach(([f,d,w])=>{const o=ac.createOscillator(),g=ac.createGain();o.type=w||'sine';o.frequency.value=f;g.gain.value=.06;o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);t+=d})}catch(e){}}
+/* ===== LEADERBOARD (swap load/save for fetch() to add a backend) ===== */
+const lbLoad=()=>{try{return JSON.parse(localStorage.getItem(LB))||[]}catch(e){return[]}};
+const lbSave=r=>{try{const a=lbLoad();a.push(r);a.sort((x,y)=>y.score-x.score||y.time-x.time);localStorage.setItem(LB,JSON.stringify(a.slice(0,10)))}catch(e){}};
+function lbDraw(id){const a=lbLoad(),el=$(id);el.innerHTML='';if(!a.length){el.textContent='NO RECORDS YET';return}
+ const t=document.createElement('table');t.innerHTML='<tr><th>#</th><th>CREW</th><th>SCORE</th><th>TIME LEFT</th><th>ERR</th><th>RANK</th></tr>';
+ a.slice(0,5).forEach((r,i)=>{const tr=t.insertRow();[i+1,r.name,r.score,fmt(r.time),r.mistakes,r.rank[0]].forEach(v=>tr.insertCell().textContent=v)});el.appendChild(t)}
+/* ===== STATE ===== */
+let S,tick,pt;
+const fresh=()=>({lv:0,score:0,time:TOTAL,integ:100,oxy:100,reac:100,done:[],mistakes:0,hints:0,hinted:{},frags:[],started:false,over:false,won:false,paused:false,busy:false});
+const show=id=>['title','game','end'].forEach(s=>$('#'+s).hidden=s!==id);
+function start(){const n=$('#nm').value.trim()||'CREW';try{localStorage.setItem(NM,n)}catch(e){}
+ S=fresh();S.name=n;S.started=true;$('#who').textContent=n;show('game');snd('door');draw();clearInterval(tick);
+ tick=setInterval(()=>{if(S.paused||S.over)return;S.time--;if(S.time===600||S.time===300)snd('warn');if(S.time<=60&&S.time%2==0)snd('alarm');hud();if(S.time<=0)lose('REACTOR CRITICAL — STATION LOST')},1000)}
+function hud(){$('#tm').textContent=fmt(Math.max(0,S.time));$('#sc').textContent=S.score;
+ $('#hud').className='pn hud '+(S.time<=60?'emg':S.time<=300?'crit':S.time<=600?'warn':'');
+ [['integ',1],['oxy',2],['reac',3]].forEach(([k,i])=>{const v=Math.max(0,S[k]);$('#v'+i).textContent=v+'%';$('#b'+i).firstChild.style.width=v+'%';$('#b'+i).className='bar'+(v<=30?' low':'')})}
+function map(){$('#map').innerHTML=LV.map((l,i)=>`<div class="${S.done.includes(i)?'done':i===S.lv?'cur':''}">[${pad(i+1)}] ${l.n} ${S.done.includes(i)?'✓':i===S.lv?'→':'🔒'}</div>`).join('');
+ $('#fr').textContent=S.frags.length?'CREW FRAGMENT LOG\n'+S.frags.map(f=>f[0]+'. '+f[1]).join('\n'):''}
+function msg(t,c){const m=$('#msg');m.textContent=t;$('#msgb').className='pn '+(c||'')}
+function draw(){const l=LV[S.lv];hud();map();$('#ln').textContent='SECTOR '+pad(S.lv+1)+' — '+l.n;$('#lq').innerHTML='';$('#lq').style.whiteSpace='pre-line';$('#lq').textContent=(l.lore?l.lore+'\n\n':'')+l.q;
+ $('#hint').textContent=S.hinted[S.lv]?'HINT: '+l.h:'';$('#hb').disabled=false;msg('AWAITING INPUT…');S.busy=false;
+ clearInterval(pt);const pz=$('#pz');pz.innerHTML='';const fgc=$('#fg');fgc.innerHTML='';
+ if(l.img){const fg=document.createElement('figure');fg.style.margin='0 0 12px';const im=document.createElement('img');im.src=l.img;im.alt='Puzzle diagram';im.style.cssText='width:100%;max-height:200px;object-fit:cover;border:1px solid var(--bd);border-radius:4px';im.onerror=()=>im.remove();const cp=document.createElement('figcaption');cp.textContent=l.cap;cp.style.cssText='font-size:.8rem;color:#7f93a8';fg.append(im,cp);fgc.appendChild(fg)}
+ (l.cl||[]).forEach(c=>{const d=document.createElement('div');d.className='ev';d.textContent=c;fgc.appendChild(d)});
+ if(l.t==='in'){pz.innerHTML='<input id="ans" aria-label="Answer" autocomplete="off"> <button class="btn" id="sub">SUBMIT</button>';
+  const go=()=>{const v=norm($('#ans').value);if(!v)return;snd('click');l.a.includes(v)?win():bad()};$('#sub').onclick=go;$('#ans').onkeydown=e=>{if(e.key==='Enter')go()};$('#ans').focus()}
+ else if(l.t==='mx'){pz.innerHTML=l.fields.map(f=>'<label>'+f[0]+'<br><input class="mx" autocomplete="off"></label><br><br>').join('')+'<button class="btn go" id="sub">INITIATE LAUNCH SEQUENCE</button>';
+  $('#sub').onclick=()=>{snd('click');[...pz.querySelectorAll('.mx')].every((x,i)=>norm(x.value)===l.fields[i][1])?win():bad()};pz.querySelector('.mx').focus()}
+ else if(l.t==='ch'){const o=document.createElement('div');o.className='opts';l.opts.forEach((t,i)=>{const b=document.createElement('button');b.className='btn';b.textContent=t;b.onclick=()=>{snd('click');i===l.a?win():bad()};o.appendChild(b)});pz.appendChild(o)}
+ else if(l.t==='seq'){let k=0;const o=document.createElement('div');o.className='opts';
+  if(l.tl){let r=l.tl;const tt=document.createElement('p');tt.className='hd';tt.style.color='var(--rd)';tt.textContent='⏱ '+r+'s';pz.appendChild(tt);pt=setInterval(()=>{if(S.paused||S.over||S.busy)return;r--;tt.textContent='⏱ '+r+'s';if(r<=0){clearInterval(pt);draw();bad()}},1000)}
+  l.items.forEach(t=>{const b=document.createElement('button');b.className='btn';b.textContent=t;b.onclick=()=>{if(S.busy)return;snd('click');
+   if(t===l.o[k]){k++;b.disabled=true;b.textContent='✓ '+t+' ('+k+')';k===l.o.length?win():msg('STEP '+k+' / '+l.o.length+' ACCEPTED','good')}
+   else{k=0;o.querySelectorAll('button').forEach((x,i)=>{x.disabled=false;x.textContent=l.items[i]});bad()}};o.appendChild(b)});pz.appendChild(o)}
+ else if(l.t==='grid'){let path=[0];const g=document.createElement('div');g.className='grid';
+  const rd=()=>{g.innerHTML='';GRID.join('').split('').forEach((c,i)=>{const b=document.createElement('button'),pi=path.indexOf(i);b.textContent=pi>=0?(c==='S'?'S':pi):c==='#'?'✕':c==='E'?'E':'·';b.setAttribute('aria-label','cell '+(i+1)+(c==='#'?' debris':''));if(pi>=0)b.className='p';else if(c==='#')b.className='x';
+   b.onclick=()=>{if(S.busy||pi>=0)return;snd('click');const last=path[path.length-1],d=Math.abs(i%5-last%5)+Math.abs((i/5|0)-(last/5|0));
+    if(c==='#'||d!==1)return bad();path.push(i);rd();if(c==='E')win();else msg('PATH NODE '+path.length+' CONFIRMED','good')};g.appendChild(b)})};rd();pz.appendChild(g)}}
+function fx(k){const a=$('#app');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');const f=$('#fl');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');
+ snd('bad');if(k.fx==='spark')snd('spark');if(k.al)snd('alarm')}
+function bad(){const l=LV[S.lv],b=l.b;S.mistakes++;S.score=Math.max(0,S.score-25);if(b.v)S[b.r]-=b.v;if(b.time)S.time-=b.time;
+ const nm={integ:'STATION INTEGRITY',oxy:'OXYGEN',reac:'REACTOR STABILITY'}[b.r];
+ msg('⚠ SYSTEM FAILURE\n'+b.h+'\n'+b.m+'\n'+(b.v?nm+': -'+b.v+'%  ':'')+'SCORE: -25','bad');fx(b);hud();
+ if(S.time<=0)return lose('REACTOR CRITICAL — STATION LOST');
+ if(S.integ<=0||S.oxy<=0||S.reac<=0)lose('CRITICAL SYSTEM FAILURE — SURVIVAL IMPOSSIBLE')}
+function win(){const l=LV[S.lv];S.busy=true;S.score+=l.p;S.done.push(S.lv);if(l.f)S.frags.push(l.f);hud();map();snd(S.lv===9?'ok':'door');
+ msg('✓ '+(l.ok?l.ok+'\n':'')+'SECTOR '+pad(S.lv+1)+' CLEARED — +'+l.p+' POINTS'+(l.f?'\nFRAGMENT LOGGED: '+l.f[1]:'')+'\nBULKHEAD UNLOCKING…','good');
+ setTimeout(()=>{if(S.over)return;if(S.lv===9)return launch();S.lv++;draw()},1400)}
+function hint(){const l=LV[S.lv];if(!S.hinted[S.lv]){S.hinted[S.lv]=1;S.hints++;S.score=Math.max(0,S.score-50);msg('HINT USED: -50 POINTS','bad')}$('#hint').textContent='HINT: '+l.h;hud()}
+function result(){const left=Math.max(0,S.time);return {name:S.name,score:S.score,time:left,mistakes:S.mistakes,rank:rank(S.score)}}
+function lose(t){if(S.over)return;S.over=true;clearInterval(tick);const r=result();lbSave(r);show('end');$('#again').textContent='TRY AGAIN';$('#cd').textContent='';
+ $('#et').textContent='████ SYSTEM FAILURE ████';$('#et').style.color='var(--rd)';snd('alarm');
+ $('#es').textContent=t+'\nARES-IV HAS REACHED CRITICAL FAILURE.\nESCAPE WINDOW CLOSED.\n\nCREW STATUS: LOST\nCREW MEMBER: '+S.name+'\nSECTORS CLEARED: '+S.done.length+' / 10\nFINAL SCORE: '+S.score;lbDraw('#lb2')}
+function launch(){S.over=true;S.won=true;clearInterval(tick);show('end');$('#again').hidden=$('#menu').hidden=true;$('#es').textContent='';$('#et').style.color='var(--gr)';$('#et').textContent='ESCAPE POD LAUNCH AUTHORIZED';
+ ['3...','2...','1...','IGNITION'].forEach((t,i)=>setTimeout(()=>{$('#cd').textContent=t;snd(i===3?'launch':'click')},1200*(i+1)));
+ setTimeout(()=>{const r=result();lbSave(r);$('#cd').textContent='';$('#again').hidden=$('#menu').hidden=false;$('#again').textContent='PLAY AGAIN';$('#et').textContent='MISSION COMPLETE';
+  $('#es').textContent='YOU ESCAPED THE ARES-IV.\n\nCREW MEMBER: '+S.name+'\nSURVIVAL TIME: '+fmt(TOTAL-S.time)+'\nFINAL SCORE: '+S.score+' / 3700\nMISTAKES: '+S.mistakes+'\nHINTS USED: '+S.hints+'\nRANK: '+r.rank;lbDraw('#lb2')},6200)}
+function pause(p){if(!S||S.over)return;S.paused=p;$('#pause').hidden=!p}
+$('#start').onclick=start;$('#again').onclick=()=>{$('#again').hidden=$('#menu').hidden=false;$('#et').style.color='';start()};
+$('#menu').onclick=()=>{show('title');lbDraw('#lb1')};$('#hb').onclick=hint;$('#ps').onclick=()=>pause(true);$('#res').onclick=()=>pause(false);
+$('#quit').onclick=()=>{clearInterval(tick);S.over=true;$('#pause').hidden=true;show('title');lbDraw('#lb1')};
+const tg=()=>{sndOn=!sndOn;$('#snd').textContent=$('#snd2').textContent='SOUND: '+(sndOn?'ON':'OFF')};$('#snd').onclick=$('#snd2').onclick=tg;
+$('#nm').onkeydown=e=>{if(e.key==='Enter')start()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S&&S.started&&!S.over)pause(true)});
+try{$('#nm').value=localStorage.getItem(NM)||''}catch(e){}
+lbDraw('#lb1');
+</script></body></html>
