@@ -40,29 +40,74 @@ input{background:#000;color:var(--tx);border:1px solid var(--cy);padding:10px;fo
 #fl.on{animation:fl .5s}@keyframes fl{30%{opacity:.35}}
 .shake{animation:sk .45s}@keyframes sk{20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,2px)}80%{transform:translate(4px,-2px)}}
 #pause{position:fixed;inset:0;background:#000d;display:flex;align-items:center;justify-content:center;text-align:center;z-index:9}
+#toast{position:fixed;bottom:12px;right:12px;background:var(--pn);border:1px solid var(--cy);color:var(--cy);padding:8px 12px;z-index:8;font-size:.8rem}.me{color:var(--am)}
 table{width:100%;border-collapse:collapse;font-size:.85rem}td,th{padding:4px 6px;border-bottom:1px solid var(--bd);text-align:left}
 .cd{font-size:4rem;text-align:center;color:var(--am)}
 @media(max-width:700px){.main{grid-template-columns:1fr}.map{display:flex;flex-wrap:wrap;gap:4px}.map div{flex:1 1 45%}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+body{background:radial-gradient(ellipse at 20% 0,#13264d66,transparent 55%),radial-gradient(ellipse at 90% 100%,#3a164a55,transparent 50%),#02040a}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(#0000 0 3px,#0000000d 3px 4px);z-index:5}
+#stars{position:fixed;inset:0;z-index:-1}
+.pn{background:linear-gradient(160deg,#0b1626e8,#060d1ae8);border:1px solid var(--bd);box-shadow:0 0 24px #00000066,inset 0 0 20px #4fd1ff0a}
+.btn{text-transform:uppercase;letter-spacing:.1em;transition:.15s}
+.btn.ghost{border-color:transparent;color:#7f93a8;font-size:.75rem;margin-top:6px;background:none}
+.tm{text-shadow:0 0 18px currentColor}
+.map .cur{box-shadow:inset 0 0 14px #ffb02033}
+.hero{text-align:center;padding:22px 0 6px}
+.planet{width:110px;height:110px;border-radius:50%;margin:0 auto 14px;position:relative;background:radial-gradient(circle at 30% 30%,#8fe6ff,#1b5d8f 45%,#06182c 78%);box-shadow:0 0 60px #2aa8ff55,inset -16px -10px 28px #000b}
+.planet::after{content:'';position:absolute;left:-46px;right:-46px;top:50%;height:34px;margin-top:-17px;border:2px solid #4fd1ff55;border-radius:50%;transform:rotate(-18deg)}
+.planet i{position:absolute;width:10px;height:10px;margin:-5px;top:50%;left:50%;border-radius:50%;background:var(--rd);box-shadow:0 0 14px var(--rd);animation:orb 7s linear infinite}
+@keyframes orb{from{transform:rotate(0) translateX(78px) rotate(0)}to{transform:rotate(360deg) translateX(78px) rotate(-360deg)}}
+.eyebrow{font-size:.72rem;letter-spacing:.2em;color:var(--rd);margin-bottom:6px}
+.big{background:linear-gradient(#fff,#4fd1ff 70%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px #4fd1ff66);margin:0}
+.tag{letter-spacing:.18em;font-size:.9rem;color:#b8c7d9;margin:8px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+.chip{border:1px solid var(--bd);background:#050b16cc;padding:5px 12px;font-size:.72rem;letter-spacing:.08em;color:#9fb2c6}
+.chip b{margin-left:6px;font-family:Orbitron,sans-serif}.chip .r{color:var(--rd)}.chip .a{color:var(--am)}.chip .c{color:var(--cy)}
+.idc{position:relative;max-width:540px;margin:20px auto;padding:26px 22px;text-align:center;border:1px solid var(--cy);border-radius:4px;background:linear-gradient(160deg,#0d2240f2,#060f1ff2);box-shadow:0 0 50px #4fd1ff33,inset 0 0 40px #4fd1ff14;animation:cg 3s ease-in-out infinite alternate}
+@keyframes cg{to{box-shadow:0 0 80px #4fd1ff55,inset 0 0 40px #4fd1ff22}}
+.idc::before,.idc::after{content:'';position:absolute;width:22px;height:22px;border:3px solid var(--am)}
+.idc::before{top:-4px;left:-4px;border-right:0;border-bottom:0}.idc::after{bottom:-4px;right:-4px;border-left:0;border-top:0}
+.step{color:var(--am);font-size:.75rem;letter-spacing:.2em;margin-bottom:10px}
+.idl{display:block;font-family:Orbitron,sans-serif;font-size:1.1rem;letter-spacing:.12em;margin-bottom:12px}
+.idc input{max-width:none;width:100%;font:600 1.5rem Orbitron,sans-serif;text-align:center;letter-spacing:.14em;padding:16px 10px;border:2px solid var(--cy);background:#000c;box-shadow:0 0 22px #4fd1ff44}
+.idc input:focus{outline:none;border-color:var(--am);box-shadow:0 0 30px #ffb02088}
+.idc input::placeholder{color:#4a6a86;font-size:1.05rem}
+.idh{font-size:.78rem;color:#7f93a8;margin:10px 0 16px}
+.idc .btn.go{width:100%;font-family:Orbitron,sans-serif;font-size:1.15rem;padding:16px;background:linear-gradient(#ffb02022,#ffb02011);box-shadow:0 0 24px #ffb02033}
+.idc .btn.go:disabled{border-color:var(--bd);color:#5c7088;box-shadow:none;background:#0a1220}
+.term .th{color:var(--cy);font-size:.75rem;letter-spacing:.2em;margin-bottom:8px}
+@media(prefers-reduced-motion:reduce){.idc,.planet i{animation:none}}
 </style></head><body>
+<canvas id="stars" aria-hidden="true"></canvas>
 <div id="fl"></div>
 <div id="app">
 <section id="title" class="scr">
- <div class="pn" style="text-align:center">
-  <div class="big hd">ARES-IV</div><h2 class="sub">DEEP SPACE ESCAPE</h2>
-  <p><b>30 MINUTES. 10 SECTORS. ONE WAY OUT.</b></p>
+ <div class="hero">
+  <div class="planet"><i title="ARES-IV station"></i></div>
+  <div class="eyebrow">⚠ EMERGENCY PROTOCOL 07 · REACTOR CONTAINMENT FAILING</div>
+  <h1 class="big hd">ARES-IV</h1><h2 class="sub">DEEP SPACE ESCAPE</h2>
+  <p class="tag">30 MINUTES. 10 SECTORS. ONE WAY OUT.</p>
  </div>
- <div class="pn"><pre style="white-space:pre-wrap;margin:0">ARES-IV DEEP SPACE STATION — EMERGENCY PROTOCOL 07
-METEOR IMPACT DETECTED. REACTOR CONTAINMENT FAILURE.
+ <div class="chips">
+  <div class="chip">MISSION STATUS <b class="r">CRITICAL</b></div>
+  <div class="chip">REACTOR <b class="a">UNSTABLE</b></div>
+  <div class="chip">ESCAPE WINDOW <b class="c">30:00</b></div>
+  <div class="chip">CREW <b class="r">1 SURVIVOR</b></div>
+ </div>
+ <div class="idc">
+  <div class="step">▸ STEP 1 — IDENTIFY YOURSELF, SURVIVOR</div>
+  <label for="nm" class="idl">ENTER CREW CALLSIGN</label>
+  <input id="nm" maxlength="20" placeholder="TYPE YOUR NAME" autocomplete="off" spellcheck="false">
+  <div class="idh">Your callsign is logged on the shared TOP SURVIVORS board.</div>
+  <button class="btn go" id="start" disabled>ENTER CALLSIGN TO UNLOCK</button>
+  <div><button class="btn ghost" id="snd">SOUND: ON</button></div>
+ </div>
+ <div class="pn term"><div class="th">▌INCOMING EMERGENCY BROADCAST</div><pre style="white-space:pre-wrap;margin:0">METEOR IMPACT DETECTED. REACTOR CONTAINMENT FAILURE.
 MULTIPLE SYSTEMS OFFLINE. ALL BULKHEADS SEALED.
-CREW STATUS: 1 SURVIVOR
-MISSION STATUS: CRITICAL  |  REACTOR: UNSTABLE  |  ESCAPE WINDOW: 30:00
+THE STATION AI IS NOT RESPONDING TO COMMANDS.
 
 CAN YOU REACH THE ESCAPE POD BAY?</pre></div>
- <div class="pn"><label for="nm">ENTER CREW IDENTIFICATION</label><br>
-  <input id="nm" maxlength="20" placeholder="NAME" autocomplete="off"><br><br>
-  <button class="btn go" id="start">INITIATE ESCAPE</button>
-  <button class="btn" id="snd">SOUND: ON</button></div>
  <div class="pn"><h3>TOP SURVIVORS</h3><div id="lb1"></div></div>
  <p style="text-align:center;color:#7f93a8;font-size:.8rem">ARES-IV DEEP SPACE STATION · EMERGENCY PROTOCOL 07</p>
 </section>
@@ -93,16 +138,18 @@ CAN YOU REACH THE ESCAPE POD BAY?</pre></div>
 <section id="end" class="scr" hidden>
  <div class="pn" id="endp" style="text-align:center">
   <h1 id="et"></h1><div class="cd" id="cd"></div><pre id="es" style="white-space:pre-wrap;font:inherit"></pre>
-  <button class="btn go" id="again">TRY AGAIN</button> <button class="btn" id="menu">RETURN TO MAIN MENU</button>
+  <p id="rs" aria-live="polite" class="sub"></p><button class="btn" id="rt" hidden>RETRY SUBMISSION</button><br><br><button class="btn go" id="again">TRY AGAIN</button> <button class="btn" id="menu">RETURN TO MAIN MENU</button>
  </div>
  <div class="pn"><h3>TOP SURVIVORS</h3><div id="lb2"></div></div>
 </section>
+<div id="toast" hidden></div>
 <div id="pause" hidden><div class="pn"><h1>GAME PAUSED</h1><p>SYSTEMS ON HOLD</p>
  <button class="btn go" id="res">RESUME</button> <button class="btn" id="quit">QUIT TO MENU</button></div></div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0'),fmt=t=>pad(t/60|0)+':'+pad(t%60);
-const LB='ares4_lb',NM='ares4_name',TOTAL=1800;
+const PEND='ares4_pending',NM='ares4_name',TOTAL=1800;
 /* ===== LEVEL DATA (edit here): n=name p=points t=type q=text a=answer h=hint b=consequence f=fragment ===== */
 const LV=[
 {n:'IMPACT CONTROL',p:100,t:'seq',lore:"You reach the wrecked control room. The main console is locked behind an emergency-procedure panel. Only three switches are live, and the crew's evacuation notice is half burned.",q:"Which order did the crew activate the three emergency systems? Flip the switches in that order.",cl:["WARNING SCREEN (damaged): MANUAL SEQUENCE REQUIRED — 3 SYSTEMS","CAPTAIN'S NOTE: 'Always activate in order of survival priority. Never call for help until you can breathe.'","CREW LOG: 'When the impact hit, the lights went out BEFORE the oxygen alarm sounded.'","INDICATOR: the POWER label is blinking amber."],items:['LIFE SUPPORT','POWER','COMMUNICATION'],o:['POWER','LIFE SUPPORT','COMMUNICATION'],ok:'CONSOLE UNLOCKED',f:['1','TREMOR — felt it before the alarm.'],h:"Survival priority, shaped by what failed first: the lights died before the oxygen alarm. Comms come last.",b:{r:'integ',v:5,h:'WRONG PROTOCOL',m:'EMERGENCY SEQUENCE REJECTED. HULL STRESS RISING.'}},
@@ -123,18 +170,12 @@ const rank=s=>RANKS.find(r=>s>=r[0])[1];
 let sndOn=true,ac;
 const SFX={click:[[700,.05]],ok:[[520,.1],[780,.18]],bad:[[150,.3,'sawtooth']],alarm:[[880,.12,'square'],[660,.12,'square'],[880,.12,'square']],spark:[[1800,.04,'square'],[900,.04,'square'],[2200,.05,'square']],door:[[300,.1],[420,.1],[560,.15]],launch:[[120,.9,'sawtooth']],warn:[[440,.2,'square']]};
 function snd(k){if(!sndOn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();let t=ac.currentTime;SFX[k].forEach(([f,d,w])=>{const o=ac.createOscillator(),g=ac.createGain();o.type=w||'sine';o.frequency.value=f;g.gain.value=.06;o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);t+=d})}catch(e){}}
-/* ===== LEADERBOARD (swap load/save for fetch() to add a backend) ===== */
-const lbLoad=()=>{try{return JSON.parse(localStorage.getItem(LB))||[]}catch(e){return[]}};
-const lbSave=r=>{try{const a=lbLoad();a.push(r);a.sort((x,y)=>y.score-x.score||y.time-x.time);localStorage.setItem(LB,JSON.stringify(a.slice(0,10)))}catch(e){}};
-function lbDraw(id){const a=lbLoad(),el=$(id);el.innerHTML='';if(!a.length){el.textContent='NO RECORDS YET';return}
- const t=document.createElement('table');t.innerHTML='<tr><th>#</th><th>CREW</th><th>SCORE</th><th>TIME LEFT</th><th>ERR</th><th>RANK</th></tr>';
- a.slice(0,5).forEach((r,i)=>{const tr=t.insertRow();[i+1,r.name,r.score,fmt(r.time),r.mistakes,r.rank[0]].forEach(v=>tr.insertCell().textContent=v)});el.appendChild(t)}
 /* ===== STATE ===== */
 let S,tick,pt;
 const fresh=()=>({lv:0,score:0,time:TOTAL,integ:100,oxy:100,reac:100,done:[],mistakes:0,hints:0,hinted:{},frags:[],started:false,over:false,won:false,paused:false,busy:false});
 const show=id=>['title','game','end'].forEach(s=>$('#'+s).hidden=s!==id);
-function start(){const n=$('#nm').value.trim()||'CREW';try{localStorage.setItem(NM,n)}catch(e){}
- S=fresh();S.name=n;S.started=true;$('#who').textContent=n;show('game');snd('door');draw();clearInterval(tick);
+function start(){const n=cleanName($('#nm').value);if(n.length<2){$('#nm').value='';$('#nm').placeholder='MIN 2 CHARACTERS';$('#nm').focus();return}try{localStorage.setItem(NM,n)}catch(e){}
+ S=fresh();S.name=n;$('#rs').textContent='';$('#rt').hidden=true;S.started=true;$('#who').textContent=n;show('game');snd('door');draw();clearInterval(tick);
  tick=setInterval(()=>{if(S.paused||S.over)return;S.time--;if(S.time===600||S.time===300)snd('warn');if(S.time<=60&&S.time%2==0)snd('alarm');hud();if(S.time<=0)lose('REACTOR CRITICAL — STATION LOST')},1000)}
 function hud(){$('#tm').textContent=fmt(Math.max(0,S.time));$('#sc').textContent=S.score;
  $('#hud').className='pn hud '+(S.time<=60?'emg':S.time<=300?'crit':S.time<=600?'warn':'');
@@ -172,14 +213,14 @@ function win(){const l=LV[S.lv];S.busy=true;S.score+=l.p;S.done.push(S.lv);if(l.
  msg('✓ '+(l.ok?l.ok+'\n':'')+'SECTOR '+pad(S.lv+1)+' CLEARED — +'+l.p+' POINTS'+(l.f?'\nFRAGMENT LOGGED: '+l.f[1]:'')+'\nBULKHEAD UNLOCKING…','good');
  setTimeout(()=>{if(S.over)return;if(S.lv===9)return launch();S.lv++;draw()},1400)}
 function hint(){const l=LV[S.lv];if(!S.hinted[S.lv]){S.hinted[S.lv]=1;S.hints++;S.score=Math.max(0,S.score-50);msg('HINT USED: -50 POINTS','bad')}$('#hint').textContent='HINT: '+l.h;hud()}
-function result(){const left=Math.max(0,S.time);return {name:S.name,score:S.score,time:left,mistakes:S.mistakes,rank:rank(S.score)}}
-function lose(t){if(S.over)return;S.over=true;clearInterval(tick);const r=result();lbSave(r);show('end');$('#again').textContent='TRY AGAIN';$('#cd').textContent='';
+function result(){const left=Math.max(0,S.time);return {name:S.name,score:S.score,time:left,mistakes:S.mistakes,hints:S.hints,rank:rank(S.score),sid:(self.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random())}}
+function lose(t){if(S.over)return;S.over=true;clearInterval(tick);show('end');$('#rs').textContent='';$('#rt').hidden=true;$('#again').textContent='TRY AGAIN';$('#cd').textContent='';
  $('#et').textContent='████ SYSTEM FAILURE ████';$('#et').style.color='var(--rd)';snd('alarm');
  $('#es').textContent=t+'\nARES-IV HAS REACHED CRITICAL FAILURE.\nESCAPE WINDOW CLOSED.\n\nCREW STATUS: LOST\nCREW MEMBER: '+S.name+'\nSECTORS CLEARED: '+S.done.length+' / 10\nFINAL SCORE: '+S.score;lbDraw('#lb2')}
 function launch(){S.over=true;S.won=true;clearInterval(tick);show('end');$('#again').hidden=$('#menu').hidden=true;$('#es').textContent='';$('#et').style.color='var(--gr)';$('#et').textContent='ESCAPE POD LAUNCH AUTHORIZED';
  ['3...','2...','1...','IGNITION'].forEach((t,i)=>setTimeout(()=>{$('#cd').textContent=t;snd(i===3?'launch':'click')},1200*(i+1)));
- setTimeout(()=>{const r=result();lbSave(r);$('#cd').textContent='';$('#again').hidden=$('#menu').hidden=false;$('#again').textContent='PLAY AGAIN';$('#et').textContent='MISSION COMPLETE';
-  $('#es').textContent='YOU ESCAPED THE ARES-IV.\n\nCREW MEMBER: '+S.name+'\nSURVIVAL TIME: '+fmt(TOTAL-S.time)+'\nFINAL SCORE: '+S.score+' / 3700\nMISTAKES: '+S.mistakes+'\nHINTS USED: '+S.hints+'\nRANK: '+r.rank;lbDraw('#lb2')},6200)}
+ setTimeout(()=>{const r=result();$('#cd').textContent='';$('#again').hidden=$('#menu').hidden=false;$('#again').textContent='PLAY AGAIN';$('#et').textContent='MISSION COMPLETE';
+  $('#es').textContent='YOU ESCAPED THE ARES-IV.\n\nCREW MEMBER: '+S.name+'\nSURVIVAL TIME: '+fmt(TOTAL-S.time)+'\nFINAL SCORE: '+S.score+' / 3700\nMISTAKES: '+S.mistakes+'\nHINTS USED: '+S.hints+'\nRANK: '+r.rank;sendResult(r)},6200)}
 function pause(p){if(!S||S.over)return;S.paused=p;$('#pause').hidden=!p}
 $('#start').onclick=start;$('#again').onclick=()=>{$('#again').hidden=$('#menu').hidden=false;$('#et').style.color='';start()};
 $('#menu').onclick=()=>{show('title');lbDraw('#lb1')};$('#hb').onclick=hint;$('#ps').onclick=()=>pause(true);$('#res').onclick=()=>pause(false);
@@ -188,5 +229,49 @@ const tg=()=>{sndOn=!sndOn;$('#snd').textContent=$('#snd2').textContent='SOUND: 
 $('#nm').onkeydown=e=>{if(e.key==='Enter')start()};
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&S&&S.started&&!S.over)pause(true)});
 try{$('#nm').value=localStorage.getItem(NM)||''}catch(e){}
+/* ===== SUPABASE LEADERBOARD — paste your project's URL and ANON (public) key. NEVER use the service_role key here. ===== */
+const SB_URL='https://wpigfmhywhhdnehyrmxv.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwaWdmbWh5d2hoZG5laHlybXh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNjM5MTcsImV4cCI6MjEwNjkzOTkxN30.AiKAXDQZn9Z0_OTGuJf-IyGhPWI6ubiDTiCOQ6GdzGg';
+let sb=null,ch=null,sending=false,rf;const seq={};
+try{if(window.supabase&&!SB_URL.includes('YOUR-PROJECT'))sb=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){}
+const cleanName=n=>(n||'').replace(/[^\p{L}\p{N} .,'_-]/gu,'').replace(/\s+/g,' ').trim().slice(0,20);
+/* service layer: submitScore / getLeaderboard (inside lbDraw) / subLB (realtime) */
+async function submitScore(r){if(!sb)throw new Error('offline');const ok=(v,a,b)=>Number.isInteger(v)&&v>=a&&v<=b;
+ if(!(ok(r.score,0,3700)&&ok(r.time,0,1800)&&ok(r.mistakes,0,999)&&ok(r.hints,0,10)&&cleanName(r.name).length>=2))throw new Error('invalid result');
+ const {error}=await sb.from('leaderboard').insert({player_name:cleanName(r.name),score:r.score,time_remaining:r.time,mistakes:r.mistakes,hints_used:r.hints,level_reached:10,completed:true,session_id:r.sid});
+ if(error&&error.code!=='23505')throw error}
+async function sendResult(r){if(sending||S.submitted)return;sending=true;const rs=$('#rs'),rt=$('#rt');
+ try{localStorage.setItem(PEND,JSON.stringify(r))}catch(e){}
+ rs.textContent='TRANSMITTING SCORE…';rt.hidden=true;
+ try{await submitScore(r);S.submitted=true;try{localStorage.removeItem(PEND)}catch(e){}rs.textContent='SCORE SUBMITTED'}
+ catch(e){rs.textContent='LEADERBOARD CONNECTION UNAVAILABLE';rt.hidden=false;rt.onclick=()=>sendResult(r)}
+ sending=false;lbDraw('#lb2',r.name)}
+async function lbDraw(id,me){const el=$(id),n=seq[id]=(seq[id]||0)+1;el.style.whiteSpace='';el.textContent='CONNECTING TO ARES-IV COMMAND NETWORK...';
+ const off=()=>{el.innerHTML='';const p=document.createElement('p'),b=document.createElement('button');p.textContent='COMMAND NETWORK OFFLINE';b.className='btn';b.textContent='RETRY';b.onclick=()=>lbDraw(id,me);el.append(p,b)};
+ if(!sb)return off();
+ try{el.textContent='RETRIEVING SURVIVOR RECORDS...';const cols='rank,player_name,score,time_remaining,mistakes,name_key';
+  const {data,error}=await sb.from('leaderboard_best').select(cols).order('rank').limit(10);if(error)throw error;
+  const key=me?me.toLowerCase():null;let mine=null;
+  if(key&&!data.some(r=>r.name_key===key)){const m=await sb.from('leaderboard_best').select(cols).eq('name_key',key).maybeSingle();mine=m.data}
+  if(seq[id]!==n)return;el.innerHTML='';
+  if(!data.length){el.style.whiteSpace='pre-line';el.textContent='NO SURVIVORS RECORDED\nYOU COULD BE THE FIRST.';return}
+  const t=document.createElement('table');t.innerHTML='<tr><th>#</th><th>CREW MEMBER</th><th>SCORE</th><th>TIME LEFT</th><th>ERR</th></tr>';
+  const row=(r,m)=>{const tr=t.insertRow();if(m)tr.className='me';[r.rank,r.player_name+(m?' ◄':''),r.score,fmt(r.time_remaining),r.mistakes].forEach(v=>tr.insertCell().textContent=v)};
+  data.forEach(r=>row(r,r.name_key===key));
+  if(mine){const c=t.insertRow().insertCell();c.colSpan=5;c.className='hd';c.textContent='YOUR POSITION';row(mine,1)}
+  el.appendChild(t)}catch(e){if(seq[id]===n)off()}}
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(e._t);e._t=setTimeout(()=>e.hidden=true,3500)}
+function subLB(){if(!sb||ch)return;ch=sb.channel('leaderboard-changes').on('postgres_changes',{event:'INSERT',schema:'public',table:'leaderboard'},p=>{
+ if($('#game').hidden)toast('NEW SURVIVOR DETECTED: '+String((p.new||{}).player_name||'').slice(0,20));
+ clearTimeout(rf);rf=setTimeout(()=>{if(!$('#title').hidden)lbDraw('#lb1');if(!$('#end').hidden)lbDraw('#lb2',S&&S.won?S.name:undefined)},700)}).subscribe()}
+addEventListener('beforeunload',()=>{try{ch&&sb.removeChannel(ch)}catch(e){}});
+subLB();
+try{const p=JSON.parse(localStorage.getItem(PEND)||'null');if(p&&p.sid)submitScore(p).then(()=>localStorage.removeItem(PEND)).catch(()=>{})}catch(e){}
 lbDraw('#lb1');
+(()=>{const c=$('#stars'),x=c.getContext('2d'),rm=matchMedia('(prefers-reduced-motion:reduce)').matches;let w,h,st=[];
+ const rs=()=>{w=c.width=innerWidth;h=c.height=innerHeight;st=Array.from({length:Math.min(170,w*h/9000|0)},()=>({x:Math.random()*w,y:Math.random()*h,z:Math.random()*.8+.2}))};rs();addEventListener('resize',rs);
+ let run=false;function f(){x.clearRect(0,0,w,h);for(const s of st){s.y+=s.z*.18;if(s.y>h){s.y=0;s.x=Math.random()*w}x.globalAlpha=.3+s.z*.7;x.fillStyle=s.z>.85?'#9fe8ff':'#fff';x.fillRect(s.x,s.y,s.z*1.7,s.z*1.7)}
+  if(!rm&&!document.hidden)requestAnimationFrame(f);else run=false}
+ f();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!rm)f()})})();
+const chk=()=>{const ok=cleanName($('#nm').value).length>=2;$('#start').disabled=!ok;$('#start').textContent=ok?'INITIATE ESCAPE':'ENTER CALLSIGN TO UNLOCK'};
+$('#nm').oninput=chk;chk();if(!$('#nm').value)$('#nm').focus();
 </script></body></html>
