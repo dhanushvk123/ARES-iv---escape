@@ -108,7 +108,6 @@ MULTIPLE SYSTEMS OFFLINE. ALL BULKHEADS SEALED.
 THE STATION AI IS NOT RESPONDING TO COMMANDS.
 
 CAN YOU REACH THE ESCAPE POD BAY?</pre></div>
- <div class="pn"><h3>TOP SURVIVORS</h3><div id="lb1"></div></div>
  <p style="text-align:center;color:#7f93a8;font-size:.8rem">ARES-IV DEEP SPACE STATION · EMERGENCY PROTOCOL 07</p>
 </section>
 
@@ -223,8 +222,8 @@ function launch(){S.over=true;S.won=true;clearInterval(tick);show('end');$('#aga
   $('#es').textContent='YOU ESCAPED THE ARES-IV.\n\nCREW MEMBER: '+S.name+'\nSURVIVAL TIME: '+fmt(TOTAL-S.time)+'\nFINAL SCORE: '+S.score+' / 3700\nMISTAKES: '+S.mistakes+'\nHINTS USED: '+S.hints+'\nRANK: '+r.rank;sendResult(r)},6200)}
 function pause(p){if(!S||S.over)return;S.paused=p;$('#pause').hidden=!p}
 $('#start').onclick=start;$('#again').onclick=()=>{$('#again').hidden=$('#menu').hidden=false;$('#et').style.color='';start()};
-$('#menu').onclick=()=>{show('title');lbDraw('#lb1')};$('#hb').onclick=hint;$('#ps').onclick=()=>pause(true);$('#res').onclick=()=>pause(false);
-$('#quit').onclick=()=>{clearInterval(tick);S.over=true;$('#pause').hidden=true;show('title');lbDraw('#lb1')};
+$('#menu').onclick=()=>{show('title')};$('#hb').onclick=hint;$('#ps').onclick=()=>pause(true);$('#res').onclick=()=>pause(false);
+$('#quit').onclick=()=>{clearInterval(tick);S.over=true;$('#pause').hidden=true;show('title')};
 const tg=()=>{sndOn=!sndOn;$('#snd').textContent=$('#snd2').textContent='SOUND: '+(sndOn?'ON':'OFF')};$('#snd').onclick=$('#snd2').onclick=tg;
 $('#nm').onkeydown=e=>{if(e.key==='Enter')start()};
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&S&&S.started&&!S.over)pause(true)});
@@ -262,11 +261,10 @@ async function lbDraw(id,me){const el=$(id),n=seq[id]=(seq[id]||0)+1;el.style.wh
 function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(e._t);e._t=setTimeout(()=>e.hidden=true,3500)}
 function subLB(){if(!sb||ch)return;ch=sb.channel('leaderboard-changes').on('postgres_changes',{event:'INSERT',schema:'public',table:'leaderboard'},p=>{
  if($('#game').hidden)toast('NEW SURVIVOR DETECTED: '+String((p.new||{}).player_name||'').slice(0,20));
- clearTimeout(rf);rf=setTimeout(()=>{if(!$('#title').hidden)lbDraw('#lb1');if(!$('#end').hidden)lbDraw('#lb2',S&&S.won?S.name:undefined)},700)}).subscribe()}
+ clearTimeout(rf);rf=setTimeout(()=>{if(!$('#end').hidden)lbDraw('#lb2',S&&S.won?S.name:undefined)},700)}).subscribe()}
 addEventListener('beforeunload',()=>{try{ch&&sb.removeChannel(ch)}catch(e){}});
 subLB();
 try{const p=JSON.parse(localStorage.getItem(PEND)||'null');if(p&&p.sid)submitScore(p).then(()=>localStorage.removeItem(PEND)).catch(()=>{})}catch(e){}
-lbDraw('#lb1');
 (()=>{const c=$('#stars'),x=c.getContext('2d'),rm=matchMedia('(prefers-reduced-motion:reduce)').matches;let w,h,st=[];
  const rs=()=>{w=c.width=innerWidth;h=c.height=innerHeight;st=Array.from({length:Math.min(170,w*h/9000|0)},()=>({x:Math.random()*w,y:Math.random()*h,z:Math.random()*.8+.2}))};rs();addEventListener('resize',rs);
  let run=false;function f(){x.clearRect(0,0,w,h);for(const s of st){s.y+=s.z*.18;if(s.y>h){s.y=0;s.x=Math.random()*w}x.globalAlpha=.3+s.z*.7;x.fillStyle=s.z>.85?'#9fe8ff':'#fff';x.fillRect(s.x,s.y,s.z*1.7,s.z*1.7)}
